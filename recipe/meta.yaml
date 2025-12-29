@@ -11,9 +11,16 @@ source:
 
 build:
   number: 1
-  # trigger 1
   skip: true  # [py<37]
   script:
+    # There is no source code to patch.
+    # The package hasn't been maintained for 4 years and doesn't support py314.
+    # Python 3.14 removed old AST node types. Simple aliasing fails because Constant uses '.value' attribute while old types used .s/.n.
+    # The patch makes isinstance(node, Str) work AND handles attribute access correctly.
+    # Python script patches setup.py with two changes:
+    # 1. Imports Constant and aliases it to Str, Num, Bytes, NameConstant for Python 3.14.
+    # 2. Adds early check in _convert() to return node.value for Constant instances.
+    - {{ PYTHON }} {{ RECIPE_DIR }}/patch_setup.py  # [py==314]
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
     - {{ PYTHON }} {{ RECIPE_DIR }}/rm_broken_file.py
 
