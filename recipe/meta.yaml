@@ -12,7 +12,7 @@ source:
     # The package hasn't been maintained for 4 years and doesn't support py314.
     # Python 3.14 removed old AST node types. Simple aliasing fails because Constant uses '.value' attribute while old types used .s/.n.
     # The patch makes isinstance(node, Str) work AND handles attribute access correctly.
-    # We patche setup.py with two changes:
+    # We patch setup.py with two changes:
     # 1. Imports Constant and aliases it to Str, Num, Bytes, NameConstant for Python 3.14.
     # 2. Adds early check in _convert() to return node.value for Constant instances.
     - py314-ast-compat.patch  # [py==314]
