@@ -1,0 +1,25 @@
+--- a/setup.py
++++ b/setup.py
+@@ -78,7 +78,11 @@ else:
+             print('{:%Y-%d-%mT%H:%M:%S}'.format(datetime.datetime.now()), file=fp, end=' ')
+             print(*args, **kw1)
+ 
+-if sys.version_info >= (3, 8):
++if sys.version_info >= (3, 14):
++    from ast import Constant
++    Str = Num = Bytes = NameConstant = Constant
++
++elif sys.version_info >= (3, 8):
+     from ast import Str, Num, Bytes, NameConstant  # NOQA
+ 
+ 
+@@ -105,6 +109,9 @@ def literal_eval(node_or_string):
+         raise TypeError('only string or AST nodes supported')
+ 
+     def _convert(node):
++        if sys.version_info >= (3, 14) and isinstance(node, Constant):
++            return node.value
++        
+         if isinstance(node, Str):
+             if sys.version_info < (3,) and not isinstance(node.s, unicode):
+                 return node.s.decode('utf-8')
